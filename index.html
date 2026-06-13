@@ -330,7 +330,12 @@
 
     <label>Jam Patroli *</label>
     <input type="time" id="jamPatroli">
-
+    <div style="margin-top: 15px; margin-bottom: 15px; background: #f8f9fa; border: 1px dashed #17a2b8; padding: 12px; border-radius: 6px; text-align: center;">
+    <label style="font-weight: bold; font-size: 14px; display: block; margin-bottom: 5px; color: #333;">📸 Ambil Foto Bukti Lapangan :</label>
+    <input type="file" accept="image/*" capture="environment" onchange="previewKameraPatroli(this)" style="font-size: 13px;">
+    <img src="#" class="preview-foto-patroli" style="max-width: 100%; max-height: 160px; margin-top: 8px; display: none; border-radius: 4px; border: 1px solid #ccc; margin-left: auto; margin-right: auto;">
+    </div>
+    
     <div id="panelAdmin" class="admin-panel">
         <h4 style="margin: 0 0 5px 0; color: #856404;">🛠️ Monitoring & Panel Kontrol Manajemen Internal</h4>
         <p style="margin: 0 0 10px 0; font-size: 12px; color: #666;">Data log aktivitas pengisian form tersimpan di bawah ini secara real-time:</p>
@@ -902,7 +907,8 @@
         pdf.text("Shift Kerja        : " + (document.getElementById("shiftPetugas").value || "-"), 15, y); y += 6;
         pdf.text("Tanggal Patroli : " + (document.getElementById("tanggalPatroli").value || "-"), 15, y); y += 6;
         pdf.text("Jam Patroli       : " + (document.getElementById("jamPatroli").value || "-"), 15, y);
-
+        pdf.text("Koordinat GPS   : " + koordinatGpsVal, 15, y + 20);
+        
         if (fotoPetugasBase64) {
             try { pdf.addImage(fotoPetugasBase64, 'JPEG', 160, 25, 30, 38); } catch (e) { console.error(e); }
         }
@@ -923,7 +929,11 @@
             pdf.setFontSize(12);
             pdf.text(`AREA ${i + 1} : ${namaArea.toUpperCase()}`, 15, y);
             y += 8;
-
+          // Menggambar kotak border abu-abu rapi untuk membungkus area
+          pdf.setDrawColor(180, 180, 180);
+          pdf.setLineWidth(0.3);
+          pdf.rect(15, y, 180, 25); // Membuat kotak pembatas area di PDF
+            
             const photoCards = area.querySelectorAll(".photo-card");
             for (let j = 0; j < photoCards.length; j++) {
                 checkPageBreak(50);
@@ -1000,6 +1010,18 @@
             alert("✅ BERHASIL: PDF Laporan berhasil diunduh!\n🗑️ Sistem otomatis membersihkan seluruh data (termasuk foto petugas & area) agar form bersih sempurna untuk diisi petugas selanjutnya.");
         }, 1000); 
     }
+   function previewKameraPatroli(input) {
+    const preview = input.nextElementSibling;
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+   }
+    
 </script>
 
 </body>
