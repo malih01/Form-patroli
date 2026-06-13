@@ -304,22 +304,22 @@
         <button type="button" id="btnResetTotal" onclick="resetTotalSemuaData()" style="background: #dc3545; color: white; font-weight: bold; margin: 0; flex: 1; display: none;">🗑️ Reset Total (Hapus Semua Data & Petugas)</button>
     </div>
 
-    <h3>Data Hak Akses & Personel</h3>
+    <h3>Data Hak Akses </h3>
     
-    <label>Pilih Peran / Jabatan Anda *</label>
+    <label>Pilih Jabatan Anda </label>
     <select id="userRole" onchange="aturHakAksesRBAC()">
         <option value="petugas">Petugas (Security Lapangan)</option>
         <option value="danru">Komandan Regu (Danru)</option>
         <option value="admin">Chief Security / Admin</option>
     </select>
 
-    <label class="center-label">Foto Petugas *</label>
+    <label class="center-label">Foto Petugas </label>
     <input type="file" id="fotoPetugas" accept="image/*" style="display: none;">
     <div id="previewPetugas" class="preview-petugas" onclick="document.getElementById('fotoPetugas').click()">
         <div class="placeholder-text">📸 <br>Klik untuk Foto</div>
     </div>
 
-    <label>Nama Petugas *</label>
+    <label>Nama Petugas </label>
     <input type="text" id="namaPetugas" placeholder="Masukkan nama lengkap" oninput="updateNamaTtd()">
 
     <label>Shift </label>
