@@ -322,13 +322,13 @@
     <label>Nama Petugas *</label>
     <input type="text" id="namaPetugas" placeholder="Masukkan nama lengkap" oninput="updateNamaTtd()">
 
-    <label>Shift Kerja *</label>
-    <input type="text" id="shiftPetugas" placeholder="Contoh: Shift A / Pagi / Regu 2">
+    <label>Shift </label>
+    <input type="text" id="shift" placeholder="">
 
-    <label>Tanggal Patroli *</label>
+    <label>Tanggal Patroli </label>
     <input type="date" id="tanggalPatroli">
 
-    <label>Jam Patroli *</label>
+    <label>Jam Patroli </label>
     <input type="time" id="jamPatroli">
 
     <div id="panelAdmin" class="admin-panel">
@@ -414,7 +414,7 @@
 
     function aturHakAksesRBAC() {
         const roleTarget = document.getElementById("userRole").value;
-        const PIN_DANRU = "1234";  
+        const PIN_DANRU = "4444";  
         const PIN_ADMIN = "9999";  
 
         if (roleTarget === "danru" && currentLockedRole !== "danru") {
@@ -849,7 +849,7 @@ function tambahArea() {
                         <textarea class="keterangan">${f.keterangan || ''}</textarea>
                         <label style="font-size:12px;">Kondisi Area</label>
                         <select class="kondisi">
-                            <option value="Normal" ${f.kondisi === 'Normal' ? 'selected' : ''}>Normal</option>
+                            <option value="Terkendali Aman" ${f.kondisi === 'Terkendali Aman' ? 'selected' : ''}>Terkendali Aman</option>
                             <option value="Perlu Perbaikan" ${f.kondisi === 'Perlu Perbaikan' ? 'selected' : ''}>Perlu Perbaikan</option>
                             <option value="Bahaya" ${f.kondisi === 'Bahaya' ? 'selected' : ''}>Bahaya</option>
                         </select>
