@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Form Laporan Patroli Security - Secure RBAC System V3</title>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- PUSTAKA DOWNLOAD PDF (Wajib disisipkan di bagian atas) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
 
     <style>
         body {
@@ -321,7 +322,25 @@
 
     <label>Nama Petugas </label>
     <input type="text" id="namaPetugas" placeholder="Masukkan nama lengkap" oninput="updateNamaTtd()">
+    <!-- Pilihan Titik Patroli -->
+<div style="margin-bottom: 15px;">
+    <label style="display: block; font-weight: bold;">Titik Lokasi Patroli:</label>
+    <select id="titikPatroli" style="width: 100%; padding: 10px;">
+        <option value="">-- Pilih Titik Patroli --</option>
+        <option value="Pos 1 (Gerbang Depan)">Pos 1 (Gerbang Depan)</option>
+        <option value="Gedung Utama (Lobby)">Gedung Utama (Lobby)</option>
+        <option value="Gudang Logistik">Gudang Logistik</option>
+        <option value="Area Parkir Belakang">Area Parkir Belakang</option>
+    </select>
+</div>
 
+<!-- Input & Tombol Koordinat GPS -->
+<div style="margin-bottom: 15px;">
+    <label style="display: block; font-weight: bold;">Koordinat GPS:</label>
+    <input type="text" id="koordinatGps" placeholder="Klik tombol di bawah untuk ambil lokasi" readonly style="width: 100%; padding: 10px;">
+    <button type="button" onclick="ambilLokasiGps()" style="width: 100%; padding: 12px; background-color: #17a2b8; color: white; font-weight: bold; margin-top: 5px;">📍 Ambil Lokasi GPS</button>
+</div>
+    
     <label>Shift </label>
     <input type="text" id="shift" placeholder="">
 
@@ -902,7 +921,12 @@ function tambahArea() {
         pdf.text("Shift Kerja        : " + (document.getElementById("shiftPetugas").value || "-"), 15, y); y += 6;
         pdf.text("Tanggal Patroli : " + (document.getElementById("tanggalPatroli").value || "-"), 15, y); y += 6;
         pdf.text("Jam Patroli       : " + (document.getElementById("jamPatroli").value || "-"), 15, y);
+      const titikPatroliVal = document.getElementById("titikPatroli").value || "-";
+const koordinatGpsVal = document.getElementById("koordinatGps").value || "-";
 
+pdf.text("Titik Lokasi  : " + titikPatroliVal, 15, y + 20);
+pdf.text("Koordinat GPS : " + koordinatGpsVal, 15, y + 25);
+        
         if (fotoPetugasBase64) {
             try { pdf.addImage(fotoPetugasBase64, 'JPEG', 160, 25, 30, 38); } catch (e) { console.error(e); }
         }
