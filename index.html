@@ -143,22 +143,12 @@
             margin-bottom: 10px;
         }
 
-        .btn-gallery-main {
-            background: #ffc107;
-            color: #212529;
-            font-size: 15px;
-            padding: 14px;
-        }
-        .btn-gallery-main:hover {
-            background: #e0a800;
-        }
-
         /* PERBAIKAN TOTAL: SCROLL HORIZONTAL DAN FOTO MUNCUL SEMPURNA */
         .photo-container {
-            display: flex !important; /* Paksa flex ke samping */
+            display: flex !important; 
             flex-direction: row !important;
             gap: 15px;
-            overflow-x: auto !important; /* Aktifkan scroll horizontal */
+            overflow-x: auto !important; 
             overflow-y: hidden;
             padding: 15px 10px;
             margin-top: 15px;
@@ -170,7 +160,7 @@
         }
 
         .photo-card {
-            flex: 0 0 250px !important; /* Kunci lebar agar berjejer kokoh */
+            flex: 0 0 250px !important; 
             border: 1px solid #e0e0e0;
             padding: 12px;
             border-radius: 8px;
@@ -178,7 +168,7 @@
             box-shadow: 0 2px 5px rgba(0,0,0,.05);
             display: inline-block;
             vertical-align: top;
-         white-space: normal; /* Kembalikan text agar tidak memanjang kesamping */
+            white-space: normal; 
         }
 
         .photo-card img {
@@ -196,7 +186,6 @@
             margin-top: 25px;
         }
 
-        /* Perbaikan Tombol Hapus agar Teks Keluar Luas */
         .btn-hapus-foto {
             background: #dc3545 !important;
             color: white !important;
@@ -265,7 +254,6 @@
             word-wrap: break-word;
         }
 
-        /* Panel Manajemen Aktif */
         .admin-panel {
             background: #fff3cd;
             border: 1px solid #ffeeba;
@@ -312,30 +300,12 @@
         <option value="danru">Komandan Regu (Danru)</option>
         <option value="admin">Chief Security / Admin</option>
     </select>
-<div class="input-group" style="margin-top: 10px;">
-    <label style="font-weight: bold; font-size: 13px; display: block; margin-bottom: 5px;">Dokumentasi Foto Area :</label>
-    
-    <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-        
-        <div style="flex: 1; text-align: center; border: 1px dashed #ccc; padding: 8px; border-radius: 6px; background: #f9f9f9;">
-            <span style="font-size: 11px; font-weight: bold; display: block; margin-bottom: 4px; color: #555;">📁 Galeri</span>
-            <input type="file" class="input-galeri-area" accept="image/*" multiple style="font-size: 11px; width: 100%;">
-        </div>
 
-        <div style="flex: 1; text-align: center; border: 1px dashed #17a2b8; padding: 8px; border-radius: 6px; background: #f8f9fa;">
-            <span style="font-size: 11px; font-weight: bold; display: block; margin-bottom: 4px; color: #17a2b8;">📸 Kamera</span>
-            <input type="file" class="input-kamera-area" accept="image/*" capture="environment" style="font-size: 11px; width: 100%;">
-        </div>
-
+    <label class="center-label">Foto Petugas *</label>
+    <div id="previewPetugas" class="preview-petugas" onclick="document.getElementById('fotoPetugas').click()">
+        <div class="placeholder-text">📸 <br>Klik untuk Foto</div>
     </div>
-</div>
-    
-
-    <img src="#" class="preview-foto-area" style="max-width: 100%; max-height: 140px; display: none; border-radius: 4px; border: 1px solid #ccc; margin: 5px auto 0 auto;">
-    </div>
-        
-    
-    
+    <input type="file" id="fotoPetugas" accept="image/*" style="display: none;">
 
     <label>Nama Petugas *</label>
     <input type="text" id="namaPetugas" placeholder="Masukkan nama lengkap" oninput="updateNamaTtd()">
@@ -348,11 +318,6 @@
 
     <label>Jam Patroli *</label>
     <input type="time" id="jamPatroli">
-    <div style="margin-top: 15px; margin-bottom: 15px; background: #f8f9fa; border: 1px dashed #17a2b8; padding: 12px; border-radius: 6px; text-align: center;">
-    <label style="font-weight: bold; font-size: 14px; display: block; margin-bottom: 5px; color: #333;">📸 Ambil Foto Bukti Lapangan :</label>
-    <input type="file" accept="image/*" capture="environment" onchange="previewKameraPatroli(this)" style="font-size: 13px;">
-    <img src="#" class="preview-foto-patroli" style="max-width: 100%; max-height: 160px; margin-top: 8px; display: none; border-radius: 4px; border: 1px solid #ccc; margin-left: auto; margin-right: auto;">
-    </div>
     
     <div id="panelAdmin" class="admin-panel">
         <h4 style="margin: 0 0 5px 0; color: #856404;">🛠️ Monitoring & Panel Kontrol Manajemen Internal</h4>
@@ -408,12 +373,11 @@
         tambahLog("Sistem form diinisialisasi oleh role Petugas Lapangan.");
     };
 
-    // Fungsi Sistem Log Manajemen Internal
     function tambahLog(pesan) {
         let logs = JSON.parse(localStorage.getItem("logPatroliInternal")) || [];
         const waktu = new Date().toLocaleTimeString('id-ID');
         logs.push(`[${waktu}] ${pesan}`);
-        if(logs.length > 50) logs.shift(); // Batasi maksimal 50 baris log
+        if(logs.length > 50) logs.shift(); 
         localStorage.setItem("logPatroliInternal", JSON.stringify(logs));
         perbaruiTampilanLog();
     }
@@ -425,6 +389,22 @@
             view.innerHTML = "Belum ada aktivitas tercatat.";
         } else {
             view.innerHTML = logs.reverse().join("<br>");
+        }
+    }
+
+    // Fungsi Pembaca Kamera untuk tombol area
+    function previewKameraPatroli(input) {
+        if (!input.files || input.files.length === 0) return;
+        const hiddenInputId = input.id.replace('cam_', 'gal_');
+        const hiddenInput = document.getElementById(hiddenInputId);
+        
+        if (hiddenInput) {
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(input.files[0]);
+            hiddenInput.files = dataTransfer.files;
+            
+            const event = { target: hiddenInput };
+            prosesMediaArea(event, hiddenInput);
         }
     }
 
@@ -444,28 +424,23 @@
             const inputPIN = prompt("🔐 OTENTIKASI: Masukkan PIN khusus Komandan Regu (Danru):");
             if (inputPIN !== PIN_DANRU) {
                 alert("❌ AKSES DITOLAK: PIN Danru salah!");
-                tambahLog(`⚠️ GAGAL AKES: Percobaan login Role Danru ditolak (PIN salah).`);
                 document.getElementById("userRole").value = currentLockedRole; 
                 return;
             }
             alert("🔓 BERHASIL: Akses Komandan Regu dibuka.");
-            tambahLog(`🔓 BERHASIL: Role berubah menjadi Komandan Regu (Danru).`);
             currentLockedRole = "danru";
         } 
         else if (roleTarget === "admin" && currentLockedRole !== "admin") {
             const inputPIN = prompt("🔐 OTENTIKASI PERANGKAT: Masukkan PIN Khusus Chief Security / Admin:");
             if (inputPIN !== PIN_ADMIN) {
                 alert("❌ AKSES DITOLAK: PIN Admin salah!");
-                tambahLog(`⚠️ GAGAL AKSES: Percobaan login Role Chief/Admin ditolak (PIN salah).`);
                 document.getElementById("userRole").value = currentLockedRole; 
                 return;
             }
             alert("🔓 BERHASIL: Selamat datang Chief. Akses kontrol penuh dibuka.");
-            tambahLog(`🔓 BERHASIL: Role berubah menjadi Chief Security / Admin.`);
             currentLockedRole = "admin";
         } 
         else if (roleTarget === "petugas") {
-            tambahLog(`🔒 INFO: Role diturunkan kembali ke Petugas Lapangan.`);
             currentLockedRole = "petugas";
         }
 
@@ -504,6 +479,15 @@
             perbaruiTampilanLog();
         }
     }
+
+    document.getElementById("fotoPetugas").addEventListener("change", function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        kompresGambar(file, 400, 500, function(base64Hasil) {
+            fotoPetugasBase64 = base64Hasil;
+            document.getElementById("previewPetugas").innerHTML = `<img src="${fotoPetugasBase64}">`;
+        });
+    });
 
     function initSignaturePad() {
         canvas = document.getElementById("signaturePad");
@@ -589,16 +573,7 @@
         };
     }
 
-    document.getElementById("fotoPetugas").addEventListener("change", function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        kompresGambar(file, 400, 500, function(base64Hasil) {
-            fotoPetugasBase64 = base64Hasil;
-            document.getElementById("previewPetugas").innerHTML = `<img src="${fotoPetugasBase64}">`;
-            tambahLog(`📸 Foto Profil Petugas diunggah.`);
-        });
-    });
-
+    // DISINI TOMBOL KELOLA FOTO AREA SUDAH JADI SEJAJAR (GALERI & KAMERA LIVE)
     function tambahArea() {
         nomorArea++;
         let div = document.createElement("div");
@@ -612,17 +587,25 @@
             <label>Nama Area</label>
             <input type="text" class="namaArea" placeholder="Contoh: Gedung Logistik, Pintu Gerbang Depan">
 
-            <label>Dokumentasi Foto Area</label>
-            <div class="media-buttons">
-                <button type="button" class="btn-gallery-main" onclick="document.getElementById('gal_' + ${nomorArea}).click()">📁 Pilih Foto Area (Multi)</button>
-                <input type="file" id="gal_${nomorArea}" accept="image/*" multiple style="display:none;" onchange="prosesMediaArea(event, this)">
+               <label style="font-weight: bold; font-size: 13px; display: block; margin-bottom: 5px;">Dokumentasi Foto Area :</label>
+            <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                
+                <div style="flex: 1; text-align: center; border: 1px dashed #ccc; padding: 8px; border-radius: 6px; background: #f9f9f9; cursor: pointer;" onclick="document.getElementById('gal_' + ${nomorArea}).click()">
+                    <span style="font-size: 11px; font-weight: bold; display: block; margin-bottom: 4px; color: #555;">📁 Galeri</span>
+                    <input type="file" id="gal_${nomorArea}" accept="image/*" multiple style="display:none;" onchange="prosesMediaArea(event, this)">
+                </div>
+
+                <div style="flex: 1; text-align: center; border: 1px dashed #17a2b8; padding: 8px; border-radius: 6px; background: #f8f9fa; cursor: pointer;" onclick="document.getElementById('cam_' + ${nomorArea}).click()">
+                    <span style="font-size: 11px; font-weight: bold; display: block; margin-bottom: 4px; color: #17a2b8;">📸 Kamera</span>
+                    <input type="file" id="cam_${nomorArea}" accept="image/*" capture="environment" style="display:none;" onchange="previewKameraPatroli(this)">
+                </div>
+
             </div>
             
             <div class="loading-text">Sedang memproses...</div>
             <div class="photo-container previewFoto"></div>
         `;
         document.getElementById("areaContainer").appendChild(div);
-        tambahLog(`➕ Area baru ke-${nomorArea} ditambahkan.`);
     }
 
     function prosesMediaArea(event, hiddenInput) {
@@ -660,7 +643,6 @@
                 if (prosesSelesai === files.length) {
                     if (loadingText) loadingText.style.display = "none";
                     hiddenInput.value = ""; 
-                    tambahLog(`🖼️ Berhasil mengunggah ${files.length} foto temuan area.`);
                 }
             });
         });
@@ -669,12 +651,10 @@
     function patroliBaru() {
         if (confirm("Apakah Anda yakin ingin memulai patroli baru? Ini akan menghapus semua input area dan tanda tangan, tetapi TETAP MENJAGA data profil petugas.")) {
             eksekusiResetPatroliSaja();
-            tambahLog(`🔄 Patroli Baru dimulai (Data area dibersihkan).`);
             alert("Riwayat patroli objek dibersihkan. Selamat bertugas kembali!");
         }
     }
 
-    // PERBAIKAN: SEKARANG BENAR-BENAR MEMBERSIHKAN FOTO PETUGAS JUGA SAAT TOTAL RESET BERDASARKAN KONDISI
     function eksekusiResetPatroliSaja() {
         document.getElementById("areaContainer").innerHTML = "";
         nomorArea = 0;
@@ -692,20 +672,18 @@
             shiftPetugas: document.getElementById("shiftPetugas").value,
             tanggal: document.getElementById("tanggalPatroli").value,
             jam: jam,
-            fotoPetugas: fotoPetugasBase64, // Dipertahankan untuk patroli baru biasa
+            fotoPetugas: fotoPetugasBase64,
             tandaTangan: "",
             areas: []
         };
         localStorage.setItem("laporanPatroliTerkompresi", JSON.stringify(dataPembersihan));
     }
 
-    // Fungsi Reset Pasca Unduh PDF (Menghapus total area, ttd, DAN foto petugas/nama agar siap dipakai petugas lain)
     function eksekusiResetPascaDownload() {
         document.getElementById("areaContainer").innerHTML = "";
         nomorArea = 0;
         clearSignature();
         
-        // Hapus total data profil petugas agar tidak tertinggal di perangkat
         fotoPetugasBase64 = "";
         document.getElementById("previewPetugas").innerHTML = `<div class="placeholder-text">📸 <br>Klik untuk Foto</div>`;
         document.getElementById("namaPetugas").value = "";
@@ -728,7 +706,6 @@
 
         if (confirm("⚠️ PERINGATAN: Apakah Anda yakin ingin menghapus TOTAL semua data termasuk profil?")) {
             eksekusiResetPascaDownload();
-            tambahLog(`💥 RESET TOTAL: Seluruh data perangkat dikosongkan oleh pimpinan.`);
             alert("💥 Sukses! Perangkat dikosongkan total.");
         }
     }
@@ -806,7 +783,6 @@
         };
 
         localStorage.setItem("laporanPatroliTerkompresi", JSON.stringify(data));
-        tambahLog(`💾 Data laporan disimpan sementara di internal HP.`);
         alert("Data Berhasil Disimpan Sementara!");
     }
 
@@ -853,10 +829,16 @@
                     </div>
                     <label>Nama Area</label>
                     <input type="text" class="namaArea" value="${areaData.namaArea || ''}">
-                    <label>Dokumentasi Foto Area</label>
-                    <div class="media-buttons">
-                        <button type="button" class="btn-gallery-main" onclick="document.getElementById('gal_' + ${nomorArea}).click()">📁 Pilih Foto Area (Multi)</button>
-                        <input type="file" id="gal_${nomorArea}" accept="image/*" multiple style="display:none;" onchange="prosesMediaArea(event, this)">
+                    <label style="font-weight: bold; font-size: 13px; display: block; margin-bottom: 5px;">Dokumentasi Foto Area :</label>
+                    <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                        <div style="flex: 1; text-align: center; border: 1px dashed #ccc; padding: 8px; border-radius: 6px; background: #f9f9f9; cursor: pointer;" onclick="document.getElementById('gal_' + ${nomorArea}).click()">
+                            <span style="font-size: 11px; font-weight: bold; display: block; margin-bottom: 4px; color: #555;">📁 Galeri</span>
+                            <input type="file" id="gal_${nomorArea}" accept="image/*" multiple style="display:none;" onchange="prosesMediaArea(event, this)">
+                        </div>
+                        <div style="flex: 1; text-align: center; border: 1px dashed #17a2b8; padding: 8px; border-radius: 6px; background: #f8f9fa; cursor: pointer;" onclick="document.getElementById('cam_' + ${nomorArea}).click()">
+                            <span style="font-size: 11px; font-weight: bold; display: block; margin-bottom: 4px; color: #17a2b8;">📸 Kamera</span>
+                            <input type="file" id="cam_${nomorArea}" accept="image/*" capture="environment" style="display:none;" onchange="previewKameraPatroli(this)">
+                        </div>
                     </div>
                     <div class="loading-text">Sedang memproses...</div>
                     <div class="photo-container previewFoto"></div>
@@ -887,6 +869,7 @@
         }
     }
 
+    // FUNGSI UTAMA DOWNLOAD PDF JSPD MURNI + GPS DIAM-DIAM + BORDER KOTAK PDF
     async function downloadPDF() {
         if (!validasiForm()) return;
 
@@ -895,11 +878,28 @@
             return;
         }
 
+        // 1. SISTEM PENEMBAK KOORDINAT GPS SECARA DIAM-DIAM (HIDDEN)
+        let koordinatGpsVal = "GPS Tidak Aktif / Diizinkan";
+        if (navigator.geolocation) {
+            try {
+                const posisi = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, { 
+                        enableHighAccuracy: true, 
+                        timeout: 4000 
+                    });
+                });
+                koordinatGpsVal = posisi.coords.latitude + ", " + posisi.coords.longitude;
+            } catch (e) {
+                koordinatGpsVal = "Gagal Mengunci GPS (Izin Ditolak / Timeout)";
+            }
+        }
+
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pageHeight = pdf.internal.pageSize.height;
         let y = 20;
 
+        // Fungsi Pemecah Halaman Otomatis
         function checkPageBreak(space) {
             if (y + space > pageHeight - 20) {
                 pdf.addPage();
@@ -907,7 +907,7 @@
             }
         }
 
-        // Header Dokumen
+        // Header Dokumen Utama
         pdf.setFillColor(30, 61, 89);
         pdf.rect(0, 0, 210, 15, 'F');
         pdf.setTextColor(255, 255, 255);
@@ -918,14 +918,14 @@
         pdf.setTextColor(0, 0, 0);
         y = 30;
 
-        // Data Informasi Petugas
+        // Data Cetak Informasi Petugas & GPS Rahasia
         pdf.setFont("Helvetica", "normal");
         pdf.setFontSize(10);
-        pdf.text("Nama Petugas  : " + (document.getElementById("namaPetugas").value || "-"), 15, y); y += 6;
-        pdf.text("Shift Kerja        : " + (document.getElementById("shiftPetugas").value || "-"), 15, y); y += 6;
+        pdf.text("Nama Petugas    : " + (document.getElementById("namaPetugas").value || "-"), 15, y); y += 6;
+        pdf.text("Shift Kerja     : " + (document.getElementById("shiftPetugas").value || "-"), 15, y); y += 6;
         pdf.text("Tanggal Patroli : " + (document.getElementById("tanggalPatroli").value || "-"), 15, y); y += 6;
-        pdf.text("Jam Patroli       : " + (document.getElementById("jamPatroli").value || "-"), 15, y);
-        pdf.text("Koordinat GPS   : " + koordinatGpsVal, 15, y + 20);
+        pdf.text("Jam Patroli     : " + (document.getElementById("jamPatroli").value || "-"), 15, y); y += 6;
+        pdf.text("Koordinat GPS   : " + koordinatGpsVal, 15, y); // Hasil GPS otomatis masuk kesini rapi
         
         if (fotoPetugasBase64) {
             try { pdf.addImage(fotoPetugasBase64, 'JPEG', 160, 25, 30, 38); } catch (e) { console.error(e); }
@@ -936,23 +936,31 @@
         pdf.line(15, y, 195, y);
         y += 10;
 
-        // Cetak Rincian Objek Area Lapangan
+        // Cetak Rincian Objek Area Lapangan + FITUR BORDER KOTAK
         const areas = document.querySelectorAll(".area");
         for (let i = 0; i < areas.length; i++) {
             const area = areas[i];
-            checkPageBreak(25);
+            checkPageBreak(30);
 
             const namaArea = area.querySelector(".namaArea")?.value || "Tanpa Nama Area";
+            
+            // --- FITUR BARU: MENGGAMBAR KOTAK BORDER PEMBATAS DI SEKITAR AREA ---
+            pdf.setDrawColor(180, 180, 180); // Warna garis pembatas abu-abu rapi
+            pdf.setLineWidth(0.3);
+            
+            // Hitung perkiraan tinggi kotak dinamis berdasarkan jumlah foto di dalamnya
+            const photoCards = area.querySelectorAll(".photo-card");
+            let tinggiKotakBorder = 12 + (photoCards.length * 46);
+            if(photoCards.length === 0) tinggiKotakBorder = 15;
+            
+            // Menggambar rect / kotak pembatas: rect(x, y, lebar, tinggi)
+            pdf.rect(13, y - 4, 184, tinggiKotakBorder);
+
             pdf.setFont("Helvetica", "bold");
             pdf.setFontSize(12);
-            pdf.text(`AREA ${i + 1} : ${namaArea.toUpperCase()}`, 15, y);
-            y += 8;
-          // Menggambar kotak border abu-abu rapi untuk membungkus area
-          pdf.setDrawColor(180, 180, 180);
-          pdf.setLineWidth(0.3);
-          pdf.rect(15, y, 180, 25); // Membuat kotak pembatas area di PDF
+            pdf.text(`AREA ${i + 1} : ${namaArea.toUpperCase()}`, 17, y + 2);
+            y += 10;
             
-            const photoCards = area.querySelectorAll(".photo-card");
             for (let j = 0; j < photoCards.length; j++) {
                 checkPageBreak(50);
 
@@ -962,7 +970,7 @@
                 const kondisi = card.querySelector(".kondisi")?.value || "Normal";
 
                 if (srcImg && srcImg.startsWith("data:image")) {
-                    try { pdf.addImage(srcImg, 'JPEG', 20, y, 50, 38); } catch(err) { pdf.text("[Gambar Error]", 20, y + 15); }
+                    try { pdf.addImage(srcImg, 'JPEG', 18, y, 50, 38); } catch(err) { pdf.text("[Gambar Error]", 18, y + 15); }
                 }
 
                 pdf.setFont("Helvetica", "normal");
@@ -984,10 +992,10 @@
 
                 y += 45;
             }
-            y += 5;
+            y += 8;
         }
 
-        // Tanda Tangan
+        // Cetak Lembar Bagian Tanda Tangan
         checkPageBreak(45);
         y += 10;
         const rightAlignX = 145; 
@@ -1014,46 +1022,20 @@
         pdf.setTextColor(85, 85, 85);
         
         let jabatanCetak = "Petugas Security";
+        let jabatanCetak = "Petugas Security";
         if (currentLockedRole === "danru") jabatanCetak = "Komandan Regu";
         if (currentLockedRole === "admin") jabatanCetak = "Chief Security";
         pdf.text(jabatanCetak, rightAlignX, y);
 
+        // Eksekusi Download File PDF
         pdf.save(`Laporan_Patroli_${document.getElementById("tanggalPatroli").value}.pdf`);
         tambahLog(`📥 PDF Sukses diunduh oleh ${namaCetak.toUpperCase()} (${jabatanCetak}).`);
 
-        // PERBAIKAN: AUTO RESET TOTAL (FOTO PETUGAS IKUT BERSIH) SETELAH DOWNLOAD
+        // SISTEM AUTO RESET PASCA DOWNLOAD SELESAI
         setTimeout(() => {
             eksekusiResetPascaDownload();
-            tambahLog(`🗑️ Sistem otomatis membersihkan TOTAL data perangkat untuk berganti shift.`);
-            alert("✅ BERHASIL: PDF Laporan berhasil diunduh!\n🗑️ Sistem otomatis membersihkan seluruh data (termasuk foto petugas & area) agar form bersih sempurna untuk diisi petugas selanjutnya.");
-        }, 1000); 
+        }, 1500);
     }
-   function previewKameraPatroli(input) {
-    const preview = input.nextElementSibling;
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            preview.src = e.target.result;
-            preview.style.display = 'block';
-        }
-        reader.readAsDataURL(input.files[0]);
-    }
-   }
-    function previewFotoArea(input) {
-    // Mencari elemen pembungkus utama, lalu menembak tag <img> di bawahnya
-    const container = input.closest('div').parentElement;
-    const preview = container.nextElementSibling;
-    
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            preview.src = e.target.result;
-            preview.style.display = 'block';
-        }
-        reader.readAsDataURL(input.files[0]);
-    }
-    }
-    
 </script>
 
 </body>
