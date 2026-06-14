@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form Laporan Patroli Security - Secure RBAC System V3</title>
+    <title>Form Laporan Patroli Security - Fixed System</title>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -361,7 +361,15 @@
         document.getElementById("tanggalPatroli").value = hariIni;
 
         initSignaturePad();
-        muatRiwayatLokal();
+        
+        // PENTING: Periksa riwayat lokal, jika kosong langsung buatkan Area 1 otomatis!
+        let dataLokal = localStorage.getItem("laporanPatroliTerkompresi");
+        if (!dataLokal) {
+            tambahArea(); // Otomatis memunculkan Area 1 beserta tombol kameranya
+        } else {
+            muatRiwayatLokal();
+        }
+        
         applyVisualByRole("petugas"); 
         tambahLog("Sistem form diinisialisasi oleh role Petugas Lapangan.");
     };
@@ -407,6 +415,7 @@
             }
             alert("🔓 BERHASIL: Akses Komandan Regu dibuka.");
             currentLockedRole = "danru";
+            tambahLog("Akses Komandan Regu (Danru) berhasil diverifikasi.");
         } 
         else if (roleTarget === "admin" && currentLockedRole !== "admin") {
             const inputPIN = prompt("🔐 OTENTIKASI PERANGKAT: Masukkan PIN Khusus Chief Security / Admin:");
@@ -417,6 +426,7 @@
             }
             alert("🔓 BERHASIL: Selamat datang Chief. Akses kontrol penuh dibuka.");
             currentLockedRole = "admin";
+            tambahLog("Akses Chief Security / Admin berhasil diverifikasi.");
         } 
         else if (roleTarget === "petugas") {
             currentLockedRole = "petugas";
@@ -466,6 +476,7 @@
         kompresGambar(file, 400, 500, function(base64Hasil) {
             fotoPetugasBase64 = base64Hasil;
             document.getElementById("previewPetugas").innerHTML = `<img src="${fotoPetugasBase64}">`;
+            tambahLog("Foto profil utama petugas lapangan diperbarui.");
         });
     });
 
@@ -569,17 +580,23 @@
             <label style="font-weight: bold; font-size: 13px; display: block; margin-bottom: 5px;">Dokumentasi Foto Area :</label>
             <div style="display: flex; gap: 8px; margin-bottom: 10px;">
                 
-                <div style="flex: 1; text-align: center; border: 1px dashed #ccc; padding: 8px; border-radius: 6px; background: #f9f9f9; cursor: pointer;" onclick="document.getElementById('gal_' + ${nomorArea}).click()">
+          <div style="flex: 1; text-align: center; border: 1px dashed #ccc; padding: 8px; border-radius: 6px; background: #f9f9f9; cursor: pointer;" onclick="document.getElementById('gal_' + ${nomorArea}).click()">
                     <span style="font-size: 11px; font-weight: bold; display: block; margin-bottom: 4px; color: #555;">📁 Galeri</span>
                     <input type="file" id="gal_${nomorArea}" accept="image/*" multiple style="display:none;" onchange="prosesMediaArea(event, this)">
                 </div>
 
-                  </div>
+                <div style="flex: 1; text-align: center; border: 1px dashed #17a2b8; padding: 8px; border-radius: 6px; background: #f8f9fa; cursor: pointer;" onclick="document.getElementById('cam_' + ${nomorArea}).click()">
+                    <span style="font-size: 11px; font-weight: bold; display: block; margin-bottom: 4px; color: #17a2b8;">📸 Kamera</span>
+                    <input type="file" id="cam_${nomorArea}" accept="image/*" capture="environment" style="display:none;" onchange="prosesMediaArea(event, this)">
+                </div>
+
+            </div>
             
             <div class="loading-text">Sedang memproses...</div>
             <div class="photo-container previewFoto"></div>
         `;
         document.getElementById("areaContainer").appendChild(div);
+        tambahLog(`Area Ke-${nomorArea} ditambahkan ke dalam form.`);
     }
 
     function prosesMediaArea(event, hiddenInput) {
@@ -617,15 +634,16 @@
                 if (prosesSelesai === files.length) {
                     if (loadingText) loadingText.style.display = "none";
                     hiddenInput.value = ""; 
+                    tambahLog(`Foto objek berhasil diunggah ke dalam area.`);
                 }
             });
         });
     }
 
     function patroliBaru() {
-        if (confirm("Apakah Anda yakin ingin memulai patroli baru? Ini akan menghapus semua input area dan tanda tangan, tetapi TETAP MENJAGA data profil petugas.")) {
+        if (confirm("Apakah Anda yakin ingin memulai patroli baru? Ini akan menghapus semua input area, tetapi TETAP MENJAGA profil petugas.")) {
             eksekusiResetPatroliSaja();
-            alert("Riwayat patroli objek dibersihkan. Selamat bertugas kembali!");
+            alert("Riwayat patroli objek dibersihkan.");
         }
     }
 
@@ -651,6 +669,7 @@
             areas: []
         };
         localStorage.setItem("laporanPatroliTerkompresi", JSON.stringify(dataPembersihan));
+        tambahLog("Sistem dibersihkan untuk memulai patroli baru.");
     }
 
     function eksekusiResetPascaDownload() {
@@ -674,13 +693,14 @@
 
     function resetTotalSemuaData() {
         if (currentLockedRole === "petugas") {
-            alert("❌ DITOLAK: Maaf, Petugas Lapangan tidak memiliki wewenang untuk menghapus total data!");
+            alert("❌ DITOLAK: Maaf, Petugas Lapangan tidak memiliki wewenang!");
             return;
         }
 
         if (confirm("⚠️ PERINGATAN: Apakah Anda yakin ingin menghapus TOTAL semua data termasuk profil?")) {
             eksekusiResetPascaDownload();
             alert("💥 Sukses! Perangkat dikosongkan total.");
+            tambahLog("WIPEOUT: Seluruh data penyimpanan lokal dihapus paksa oleh Admin.");
         }
     }
 
@@ -758,14 +778,12 @@
 
         localStorage.setItem("laporanPatroliTerkompresi", JSON.stringify(data));
         alert("Data Berhasil Disimpan Sementara!");
+        tambahLog(`Data laporan patroli berhasil dicadangkan sementara secara lokal.`);
     }
 
     function muatRiwayatLokal() {
         let rawData = localStorage.getItem("laporanPatroliTerkompresi");
-        if (!rawData) {
-            tambahArea();
-            return;
-        }
+        if (!rawData) return;
 
         const data = JSON.parse(rawData);
         if(data.role) {
@@ -838,8 +856,6 @@
                 });
                 document.getElementById("areaContainer").appendChild(div);
             });
-        } else {
-            tambahArea();
         }
     }
 
@@ -890,7 +906,8 @@
 
         pdf.setFont("Helvetica", "normal");
         pdf.setFontSize(10);
-        pdf.text("Nama Petugas    : " + (document.getElementById("namaPetugas").value || "-"), 15, y); y += 6;
+        const namaCetak = document.getElementById("namaPetugas").value || "-";
+        pdf.text("Nama Petugas    : " + namaCetak, 15, y); y += 6;
         pdf.text("Shift Kerja     : " + (document.getElementById("shiftPetugas").value || "-"), 15, y); y += 6;
         pdf.text("Tanggal Patroli : " + (document.getElementById("tanggalPatroli").value || "-"), 15, y); y += 6;
         pdf.text("Jam Patroli     : " + (document.getElementById("jamPatroli").value || "-"), 15, y); y += 6;
@@ -974,7 +991,6 @@
         }
         
         y += 23;
-        const namaCetak = document.getElementById("namaPetugas").value || "-";
         pdf.setFont("Helvetica", "bold");
         pdf.text(namaCetak.toUpperCase(), rightAlignX, y);
         
