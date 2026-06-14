@@ -137,13 +137,6 @@
             box-shadow: inset 0 1px 3px rgba(0,0,0,.05);
         }
 
-        .media-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        /* PERBAIKAN TOTAL: SCROLL HORIZONTAL DAN FOTO MUNCUL SEMPURNA */
         .photo-container {
             display: flex !important; 
             flex-direction: row !important;
@@ -385,26 +378,11 @@
     function perbaruiTampilanLog() {
         const view = document.getElementById("logMonitorView");
         let logs = JSON.parse(localStorage.getItem("logPatroliInternal")) || [];
+        if(!view) return;
         if(logs.length === 0) {
             view.innerHTML = "Belum ada aktivitas tercatat.";
         } else {
             view.innerHTML = logs.reverse().join("<br>");
-        }
-    }
-
-    // Fungsi Pembaca Kamera untuk tombol area
-    function previewKameraPatroli(input) {
-        if (!input.files || input.files.length === 0) return;
-        const hiddenInputId = input.id.replace('cam_', 'gal_');
-        const hiddenInput = document.getElementById(hiddenInputId);
-        
-        if (hiddenInput) {
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(input.files[0]);
-            hiddenInput.files = dataTransfer.files;
-            
-            const event = { target: hiddenInput };
-            prosesMediaArea(event, hiddenInput);
         }
     }
 
@@ -452,6 +430,8 @@
         const btnResetTotal = document.getElementById("btnResetTotal");
         const panelAdmin = document.getElementById("panelAdmin");
         const labelJabatanTtd = document.getElementById("labelJabatanTtd");
+
+        if (!badge) return;
 
         if (activeRole === "petugas") {
             badge.innerText = "Hak Akses: PETUGAS LAPANGAN";
@@ -519,8 +499,8 @@
     function draw(e) {
         if (!isDrawing) return;
         const rect = canvas.getBoundingClientRect();
-        const clientX = e.clientX || e.pageX;
-        const clientY = e.clientY || e.pageY;
+        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+        const clientY = e.clientY || (e.touches && e.touches[0].clientY);
         const x = clientX - rect.left;
         const y = clientY - rect.top;
         ctxCanvas.lineTo(x, y);
@@ -573,7 +553,6 @@
         };
     }
 
-    // DISINI TOMBOL KELOLA FOTO AREA SUDAH JADI SEJAJAR (GALERI & KAMERA LIVE)
     function tambahArea() {
         nomorArea++;
         let div = document.createElement("div");
@@ -587,7 +566,7 @@
             <label>Nama Area</label>
             <input type="text" class="namaArea" placeholder="Contoh: Gedung Logistik, Pintu Gerbang Depan">
 
-               <label style="font-weight: bold; font-size: 13px; display: block; margin-bottom: 5px;">Dokumentasi Foto Area :</label>
+            <label style="font-weight: bold; font-size: 13px; display: block; margin-bottom: 5px;">Dokumentasi Foto Area :</label>
             <div style="display: flex; gap: 8px; margin-bottom: 10px;">
                 
                 <div style="flex: 1; text-align: center; border: 1px dashed #ccc; padding: 8px; border-radius: 6px; background: #f9f9f9; cursor: pointer;" onclick="document.getElementById('gal_' + ${nomorArea}).click()">
@@ -595,12 +574,7 @@
                     <input type="file" id="gal_${nomorArea}" accept="image/*" multiple style="display:none;" onchange="prosesMediaArea(event, this)">
                 </div>
 
-                <div style="flex: 1; text-align: center; border: 1px dashed #17a2b8; padding: 8px; border-radius: 6px; background: #f8f9fa; cursor: pointer;" onclick="document.getElementById('cam_' + ${nomorArea}).click()">
-                    <span style="font-size: 11px; font-weight: bold; display: block; margin-bottom: 4px; color: #17a2b8;">📸 Kamera</span>
-                    <input type="file" id="cam_${nomorArea}" accept="image/*" capture="environment" style="display:none;" onchange="previewKameraPatroli(this)">
-                </div>
-
-            </div>
+                  </div>
             
             <div class="loading-text">Sedang memproses...</div>
             <div class="photo-container previewFoto"></div>
@@ -614,7 +588,7 @@
         const parentArea = hiddenInput.closest(".area");
         const preview = parentArea.querySelector(".previewFoto");
         const loadingText = parentArea.querySelector(".loading-text");
-        const files = Array.from(event.target.files);
+        const files = Array.from(hiddenInput.files);
 
         if (loadingText) loadingText.style.display = "block";
 
@@ -837,7 +811,7 @@
                         </div>
                         <div style="flex: 1; text-align: center; border: 1px dashed #17a2b8; padding: 8px; border-radius: 6px; background: #f8f9fa; cursor: pointer;" onclick="document.getElementById('cam_' + ${nomorArea}).click()">
                             <span style="font-size: 11px; font-weight: bold; display: block; margin-bottom: 4px; color: #17a2b8;">📸 Kamera</span>
-                            <input type="file" id="cam_${nomorArea}" accept="image/*" capture="environment" style="display:none;" onchange="previewKameraPatroli(this)">
+                            <input type="file" id="cam_${nomorArea}" accept="image/*" capture="environment" style="display:none;" onchange="prosesMediaArea(event, this)">
                         </div>
                     </div>
                     <div class="loading-text">Sedang memproses...</div>
@@ -869,7 +843,6 @@
         }
     }
 
-    // FUNGSI UTAMA DOWNLOAD PDF JSPD MURNI + GPS DIAM-DIAM + BORDER KOTAK PDF
     async function downloadPDF() {
         if (!validasiForm()) return;
 
@@ -878,7 +851,6 @@
             return;
         }
 
-        // 1. SISTEM PENEMBAK KOORDINAT GPS SECARA DIAM-DIAM (HIDDEN)
         let koordinatGpsVal = "GPS Tidak Aktif / Diizinkan";
         if (navigator.geolocation) {
             try {
@@ -899,7 +871,6 @@
         const pageHeight = pdf.internal.pageSize.height;
         let y = 20;
 
-        // Fungsi Pemecah Halaman Otomatis
         function checkPageBreak(space) {
             if (y + space > pageHeight - 20) {
                 pdf.addPage();
@@ -907,7 +878,6 @@
             }
         }
 
-        // Header Dokumen Utama
         pdf.setFillColor(30, 61, 89);
         pdf.rect(0, 0, 210, 15, 'F');
         pdf.setTextColor(255, 255, 255);
@@ -918,14 +888,13 @@
         pdf.setTextColor(0, 0, 0);
         y = 30;
 
-        // Data Cetak Informasi Petugas & GPS Rahasia
         pdf.setFont("Helvetica", "normal");
         pdf.setFontSize(10);
         pdf.text("Nama Petugas    : " + (document.getElementById("namaPetugas").value || "-"), 15, y); y += 6;
         pdf.text("Shift Kerja     : " + (document.getElementById("shiftPetugas").value || "-"), 15, y); y += 6;
         pdf.text("Tanggal Patroli : " + (document.getElementById("tanggalPatroli").value || "-"), 15, y); y += 6;
         pdf.text("Jam Patroli     : " + (document.getElementById("jamPatroli").value || "-"), 15, y); y += 6;
-        pdf.text("Koordinat GPS   : " + koordinatGpsVal, 15, y); // Hasil GPS otomatis masuk kesini rapi
+        pdf.text("Koordinat GPS   : " + koordinatGpsVal, 15, y);
         
         if (fotoPetugasBase64) {
             try { pdf.addImage(fotoPetugasBase64, 'JPEG', 160, 25, 30, 38); } catch (e) { console.error(e); }
@@ -936,24 +905,18 @@
         pdf.line(15, y, 195, y);
         y += 10;
 
-        // Cetak Rincian Objek Area Lapangan + FITUR BORDER KOTAK
         const areas = document.querySelectorAll(".area");
         for (let i = 0; i < areas.length; i++) {
             const area = areas[i];
             checkPageBreak(30);
 
             const namaArea = area.querySelector(".namaArea")?.value || "Tanpa Nama Area";
-            
-            // --- FITUR BARU: MENGGAMBAR KOTAK BORDER PEMBATAS DI SEKITAR AREA ---
-            pdf.setDrawColor(180, 180, 180); // Warna garis pembatas abu-abu rapi
-            pdf.setLineWidth(0.3);
-            
-            // Hitung perkiraan tinggi kotak dinamis berdasarkan jumlah foto di dalamnya
             const photoCards = area.querySelectorAll(".photo-card");
             let tinggiKotakBorder = 12 + (photoCards.length * 46);
             if(photoCards.length === 0) tinggiKotakBorder = 15;
             
-            // Menggambar rect / kotak pembatas: rect(x, y, lebar, tinggi)
+            pdf.setDrawColor(180, 180, 180);
+            pdf.setLineWidth(0.3);
             pdf.rect(13, y - 4, 184, tinggiKotakBorder);
 
             pdf.setFont("Helvetica", "bold");
@@ -995,7 +958,6 @@
             y += 8;
         }
 
-        // Cetak Lembar Bagian Tanda Tangan
         checkPageBreak(45);
         y += 10;
         const rightAlignX = 145; 
@@ -1022,16 +984,13 @@
         pdf.setTextColor(85, 85, 85);
         
         let jabatanCetak = "Petugas Security";
-        let jabatanCetak = "Petugas Security";
         if (currentLockedRole === "danru") jabatanCetak = "Komandan Regu";
         if (currentLockedRole === "admin") jabatanCetak = "Chief Security";
         pdf.text(jabatanCetak, rightAlignX, y);
 
-        // Eksekusi Download File PDF
         pdf.save(`Laporan_Patroli_${document.getElementById("tanggalPatroli").value}.pdf`);
         tambahLog(`📥 PDF Sukses diunduh oleh ${namaCetak.toUpperCase()} (${jabatanCetak}).`);
 
-        // SISTEM AUTO RESET PASCA DOWNLOAD SELESAI
         setTimeout(() => {
             eksekusiResetPascaDownload();
         }, 1500);
