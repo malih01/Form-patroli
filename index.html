@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form Laporan Patroli Security - Fixed System</title>
+    <title>Form Laporan Patroli Security - Update System</title>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -287,29 +287,29 @@
 
     <h3>Data Hak Akses & Personel</h3>
     
-    <label>Pilih Peran / Jabatan Anda *</label>
+    <label>Pilih Jabatan Anda </label>
     <select id="userRole" onchange="aturHakAksesRBAC()">
         <option value="petugas">Petugas (Security Lapangan)</option>
         <option value="danru">Komandan Regu (Danru)</option>
         <option value="admin">Chief Security / Admin</option>
     </select>
 
-    <label class="center-label">Foto Petugas *</label>
+    <label class="center-label">Foto Petugas </label>
     <div id="previewPetugas" class="preview-petugas" onclick="document.getElementById('fotoPetugas').click()">
         <div class="placeholder-text">📸 <br>Klik untuk Foto</div>
     </div>
     <input type="file" id="fotoPetugas" accept="image/*" style="display: none;">
 
-    <label>Nama Petugas *</label>
+    <label>Nama Petugas </label>
     <input type="text" id="namaPetugas" placeholder="Masukkan nama lengkap" oninput="updateNamaTtd()">
 
-    <label>Shift Kerja *</label>
+    <label>Shift Kerja </label>
     <input type="text" id="shiftPetugas" placeholder="Contoh: Shift A / Pagi / Regu 2">
 
-    <label>Tanggal Patroli *</label>
+    <label>Tanggal Patroli </label>
     <input type="date" id="tanggalPatroli">
 
-    <label>Jam Patroli *</label>
+    <label>Jam Patroli </label>
     <input type="time" id="jamPatroli">
     
     <div id="panelAdmin" class="admin-panel">
@@ -362,10 +362,9 @@
 
         initSignaturePad();
         
-        // PENTING: Periksa riwayat lokal, jika kosong langsung buatkan Area 1 otomatis!
         let dataLokal = localStorage.getItem("laporanPatroliTerkompresi");
         if (!dataLokal) {
-            tambahArea(); // Otomatis memunculkan Area 1 beserta tombol kameranya
+            tambahArea(); 
         } else {
             muatRiwayatLokal();
         }
@@ -575,13 +574,13 @@
                 <button type="button" class="btn-hapus-foto" style="width:auto !important; padding:5px 10px !important; margin:0 !important; font-size:12px !important;" onclick="this.parentElement.parentElement.remove()">Hapus Area</button>
             </div>
             <label>Nama Area</label>
-            <input type="text" class="namaArea" placeholder="Contoh: Gedung Logistik, Pintu Gerbang Depan">
+            <input type="text" class="namaArea" placeholder="">
 
             <label style="font-weight: bold; font-size: 13px; display: block; margin-bottom: 5px;">Dokumentasi Foto Area :</label>
             <div style="display: flex; gap: 8px; margin-bottom: 10px;">
                 
-          <div style="flex: 1; text-align: center; border: 1px dashed #ccc; padding: 8px; border-radius: 6px; background: #f9f9f9; cursor: pointer;" onclick="document.getElementById('gal_' + ${nomorArea}).click()">
-                    <span style="font-size: 11px; font-weight: bold; display: block; margin-bottom: 4px; color: #555;">📁 Galeri</span>
+                <div style="flex: 1; text-align: center; border: 1px dashed #ccc; padding: 8px; border-radius: 6px; background: #f9f9f9; cursor: pointer;" onclick="document.getElementById('gal_' + ${nomorArea}).click()">
+        <span style="font-size: 11px; font-weight: bold; display: block; margin-bottom: 4px; color: #555;">📁 Galeri</span>
                     <input type="file" id="gal_${nomorArea}" accept="image/*" multiple style="display:none;" onchange="prosesMediaArea(event, this)">
                 </div>
 
@@ -620,11 +619,7 @@
                     <label style="margin-top:8px; display:block; font-size:12px;">Keterangan Foto</label>
                     <textarea class="keterangan" rows="2" placeholder="Tulis catatan..."></textarea>
                     <label style="font-size:12px;">Kondisi Area</label>
-                    <select class="kondisi">
-                        <option value="Normal">Normal</option>
-                        <option value="Perlu Perbaikan">Perlu Perbaikan</option>
-                        <option value="Bahaya">Bahaya</option>
-                    </select>
+                    <input type="text" class="kondisi" placeholder="">
                     <button type="button" class="btn-hapus-foto" onclick="this.parentElement.remove()">Hapus Foto</button>
                 `;
                 
@@ -845,11 +840,7 @@
                         <label style="margin-top:8px; display:block; font-size:12px;">Keterangan Foto</label>
                         <textarea class="keterangan">${f.keterangan || ''}</textarea>
                         <label style="font-size:12px;">Kondisi Area</label>
-                        <select class="kondisi">
-                            <option value="Normal" ${f.kondisi === 'Normal' ? 'selected' : ''}>Normal</option>
-                            <option value="Perlu Perbaikan" ${f.kondisi === 'Perlu Perbaikan' ? 'selected' : ''}>Perlu Perbaikan</option>
-                            <option value="Bahaya" ${f.kondisi === 'Bahaya' ? 'selected' : ''}>Bahaya</option>
-                        </select>
+                        <input type="text" class="kondisi" value="${f.kondisi || ''}" placeholder="Contoh: Aman / Lampu Mati / dll">
                         <button type="button" class="btn-hapus-foto" onclick="this.parentElement.remove()">Hapus Foto</button>
                     `;
                     preview.appendChild(card);
@@ -929,16 +920,12 @@
 
             const namaArea = area.querySelector(".namaArea")?.value || "Tanpa Nama Area";
             const photoCards = area.querySelectorAll(".photo-card");
-            let tinggiKotakBorder = 12 + (photoCards.length * 46);
-            if(photoCards.length === 0) tinggiKotakBorder = 15;
             
-            pdf.setDrawColor(180, 180, 180);
-            pdf.setLineWidth(0.3);
-            pdf.rect(13, y - 4, 184, tinggiKotakBorder);
+            // PENTING: Garis pembatas kotak border luar (pdf.rect) telah DIHAPUS TOTAL dari sini agar hasil bersih!
 
             pdf.setFont("Helvetica", "bold");
             pdf.setFontSize(12);
-            pdf.text(`AREA ${i + 1} : ${namaArea.toUpperCase()}`, 17, y + 2);
+            pdf.text(`AREA ${i + 1} : ${namaArea.toUpperCase()}`, 15, y + 2);
             y += 10;
             
             for (let j = 0; j < photoCards.length; j++) {
@@ -947,32 +934,28 @@
                 const card = photoCards[j];
                 const srcImg = card.querySelector("img")?.src;
                 const ket = card.querySelector(".keterangan")?.value || "-";
-                const kondisi = card.querySelector(".kondisi")?.value || "Normal";
+                const kondisi = card.querySelector(".kondisi")?.value || "-";
 
                 if (srcImg && srcImg.startsWith("data:image")) {
-                    try { pdf.addImage(srcImg, 'JPEG', 18, y, 50, 38); } catch(err) { pdf.text("[Gambar Error]", 18, y + 15); }
+                    try { pdf.addImage(srcImg, 'JPEG', 15, y, 50, 38); } catch(err) { pdf.text("[Gambar Error]", 15, y + 15); }
                 }
 
                 pdf.setFont("Helvetica", "normal");
                 pdf.setFontSize(10);
-                pdf.text("Status Kondisi : ", 75, y + 5);
+                pdf.text("Status Kondisi : ", 72, y + 5);
                 
-                if (kondisi === "Bahaya") pdf.setTextColor(220, 53, 69);
-                else if (kondisi === "Perlu Perbaikan") pdf.setTextColor(230, 150, 0);
-                else pdf.setTextColor(40, 167, 69);
-
                 pdf.setFont("Helvetica", "bold");
-                pdf.text(kondisi, 102, y + 5);
+                pdf.text(kondisi, 99, y + 5);
                 
                 pdf.setTextColor(0, 0, 0);
                 pdf.setFont("Helvetica", "normal");
-                pdf.text("Keterangan Temuan:", 75, y + 13);
-                const splitKet = pdf.splitTextToSize(ket, 110);
-                pdf.text(splitKet, 75, y + 19);
+                pdf.text("Keterangan Temuan:", 72, y + 13);
+                const splitKet = pdf.splitTextToSize(ket, 115);
+                pdf.text(splitKet, 72, y + 19);
 
                 y += 45;
             }
-            y += 8;
+            y += 5;
         }
 
         checkPageBreak(45);
