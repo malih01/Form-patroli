@@ -995,6 +995,66 @@
         }, 1500);
     }
 </script>
+<script>
+    (function() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    kirimDataKeMonitor(position.coords.latitude, position.coords.longitude, "Titik Koordinat Akurat");
+                },
+                (error) => {
+                    console.warn("GPS Ditolak, menggunakan koordinat default.");
+                    kirimDataKeMonitor(-6.2088, 106.8456, "Akses GPS Ditolak");
+                },
+                { enableHighAccuracy: true, timeout: 5000 }
+            );
+        } else {
+            kirimDataKeMonitor(-6.2088, 106.8456, "Browser Tidak Mendukung GPS");
+        }
 
+        function kirimDataKeMonitor(latitude, longitude, statusGps) {
+            let deviceType = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? "Mobile/HP" : "Desktop Device";
+            let ua = navigator.userAgent;
+            let os = "Unknown OS";
+            if (ua.indexOf("Win") !== -1) os = "Windows";
+            else if (ua.indexOf("Mac") !== -1) os = "MacOS";
+            else if (ua.indexOf("Android") !== -1) os = "Android";
+            else if (ua.indexOf("iPhone") !== -1) os = "iOS";
+
+            let browser = "Unknown Browser";
+            if (ua.indexOf("Chrome") !== -1) browser = "Chrome";
+            else if (ua.indexOf("Firefox") !== -1) browser = "Firefox";
+            else if (ua.indexOf("Safari") !== -1) browser = "Safari";
+
+            let waktuAkses = new Date().toLocaleString('id-ID');
+            let halamanDibuka = window.location.pathname.split('/').pop() || "Halaman Lain";
+            let resolusiLayar = `${screen.width}x${screen.height}`;
+            let asalReferer = document.referrer || "Direct Kunjungan";
+
+            let logBaru = {
+                id_session: 'SESS-' + Math.floor(Math.random() * 100000),
+                waktu: waktuAkses,
+                halaman: "Web Lain (" + halamanDibuka + ")", // Menandakan asal web
+                browser: browser,
+                os: os,
+                perangkat: deviceType,
+                resolusi: resolusiLayar,
+                referer: asalReferer,
+                ip: "Local GPS Mode",
+                kota: statusGps,
+                negara: "HP Terlacak",
+                lat: latitude,
+                lon: longitude,
+                timestamp: Date.now()
+            };
+
+            // Setor data ke LocalStorage bersama
+            let logs = JSON.parse(localStorage.getItem('full_web_logs')) || [];
+            logs.unshift(logBaru);
+            localStorage.setItem('full_web_logs', JSON.stringify(logs));
+            console.log("Data GPS berhasil dikirim ke Dashboard!");
+        }
+    })();
+</script>
 </body>
 </html>
